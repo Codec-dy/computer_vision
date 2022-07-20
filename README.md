@@ -14,7 +14,7 @@ This project will also be integrated into a security and finance system.
 
 ## Installation
 
-Install my-project with npm
+Install open-cv with pip(terminal)
 
 ```bash
   pip install opencv-python

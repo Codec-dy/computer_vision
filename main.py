@@ -1,23 +1,30 @@
+#include opencv
 import cv2 as cv
 
+#read images
 img1 = cv.imread('img.png',0)
 img2 = cv.imread('img_1.png',0)
 
+#initialize orb detection
 orb = cv.ORB_create(nfeatures=1000)
 
-kp1, des1 = orb.detectAndCompute(img1,None)
-kp2, des2 = orb.detectAndCompute(img2,None)
+# keypoints finding &&
+keypoints_1, descriptor_1 = orb.detectAndCompute(img1,None)
+keypoints_2, descriptor_2 = orb.detectAndCompute(img2,None)
 
 bf = cv.BFMatcher()
-matches = bf.knnMatch(des1,des2,k=2)
+matches = bf.knnMatch(descriptor_1,descriptor_2,k=2)
 
-good = []
+#matches occuring
+good_keypoint = []
+
 for m,n in matches:
     if m.distance < 0.75*n.distance:
-        good.append([m])
-print (len(good))
-img3 = cv.drawMatchesKnn(img1,kp1,img2,kp2,good,None,flags=2)
+        good_keypoint.append([m])
+print (len(good_keypoint))
+img3 = cv.drawMatchesKnn(img1,keypoints_1,img2,keypoints_2,good_keypoint,None,flags=2)
 
+#display images and draw keypoints
 cv.imshow('img1',img1)
 cv.imshow('img2',img2)
 cv.imshow('img3',img3)

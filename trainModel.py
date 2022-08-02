@@ -5,17 +5,20 @@ import random
 import pickle
 
 
-#Directories for training model and folder categories
-DATADIR = "F:/Projects/open_vision/PetImages/PetImages"
-CATEGORIES = ['Dog','Cat']
+# Directories for training model and folder categories
+# DATADIR = "F:/Projects/open_vision/PetImages/PetImages"
+DATADIR = os.getcwd() + '\PetImages'
+CATEGORIES = ['Dog', 'Cat']
 
-#Resize the image to 250px. The smaller the number, the lower the pixels
+# Resize the image to 250px. The smaller the number, the lower the pixels
 IMG_SIZE = 250
 
-#Will contain an array of trained data
+# Will contain an array of trained data
 training_data = []
 
-#Function to train data
+# Function to train data
+
+
 def create_training_data():
     for category in CATEGORIES:
         path = os.path.join(DATADIR, category)
@@ -31,9 +34,10 @@ def create_training_data():
             # if not is_jfif:
             #     os.remove(fpath)
             try:
-                img_array = cv2.imread(os.path.join(path, img), cv2.IMREAD_GRAYSCALE)
-                new_array = cv2.resize(img_array, (IMG_SIZE,IMG_SIZE))
-                training_data.append([new_array,class_num])
+                img_array = cv2.imread(os.path.join(
+                    path, img), cv2.IMREAD_GRAYSCALE)
+                new_array = cv2.resize(img_array, (IMG_SIZE, IMG_SIZE))
+                training_data.append([new_array, class_num])
             except Exception as e:
                 pass
 
@@ -48,12 +52,12 @@ for features, label in training_data:
     X.append(features)
     Y.append(label)
 
-X = np.array(X).reshape(-1,IMG_SIZE, IMG_SIZE, 1)
+X = np.array(X).reshape(-1, IMG_SIZE, IMG_SIZE, 1)
 
-pickle_out = open("X.pickle",'wb')
-pickle.dump(X,pickle_out)
+pickle_out = open("X.pickle", 'wb')
+pickle.dump(X, pickle_out)
 pickle_out.close()
 
-pickle_out = open("Y.pickle",'wb')
-pickle.dump(Y,pickle_out)
+pickle_out = open("Y.pickle", 'wb')
+pickle.dump(Y, pickle_out)
 pickle_out.close()

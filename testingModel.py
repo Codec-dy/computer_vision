@@ -59,9 +59,9 @@ try:
 
         cv.imshow('img3', compared_images)
 
-except Name:
+except:
     print('The product does not exist')
-    print(err)
+    
 finally:
     print(value)
 

@@ -33,8 +33,6 @@ try:
     print('This is a ' + categories[index+1])
     orb = cv.ORB_create(nfeatures=4000)
     databaseImages = os.listdir('TrainingImages/%s' %categories[index+1])
-    # databaseImages = os.getcwd() + '\DatabaseImages' + '\%s' %categories[index]
-    #
     for image_to_loop in databaseImages:
 
         img_from_database = cv.imread('TrainingImages/%s/%s' % (categories[index+1], image_to_loop), 0)
@@ -59,7 +57,6 @@ try:
                                             keypoints_2, good_keypoint, None, flags=2)
 
         arry.append([len(good_keypoint), image_to_loop])
-        #cv.imshow('img %s' %len(good_keypoint), compared_images)
     arry.sort(key=lambda row:(row[0]), reverse=True)
     print(arry)
   

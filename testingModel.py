@@ -10,7 +10,9 @@ from mysql.connector import Error
 model = load_model('CNN.model')
 
 #List of Available products
-categories = ['Bicycle','Car','Laptop','Phone']
+
+tr = os.getcwd() +'\TrainingImages'
+categories = os.listdir(tr)
 
 #Function for turning our image into an array and correcting its size
 def prepare(filepath):
@@ -23,19 +25,20 @@ def prepare(filepath):
 
 
 try:
-    user_image = 'car.jpg'
+    print(categories)
+    arry = []
+    user_image = 'TrainingImages/Clothing/img_2.png'
     value = model.predict(prepare(user_image))
     index = value[0].tolist().index(1)
-    print('This is a ' + categories[index])
+    print('This is a ' + categories[index+1])
     orb = cv.ORB_create(nfeatures=4000)
-    databaseImages = os.getcwd() + '\DatabaseImages' + '\%s' %categories[index]
+    databaseImages = os.listdir('TrainingImages/%s' %categories[index+1])
+    # databaseImages = os.getcwd() + '\DatabaseImages' + '\%s' %categories[index]
+    #
+    for image_to_loop in databaseImages:
 
-    for image_to_search in os.listdir(databaseImages):
-        print('DatabaseImages/%s/%s' % (categories[index], image_to_search))
-
-        img_from_database = cv.imread('DatabaseImages/%s/%s' % (categories[index], image_to_search), 0)
-
-        user_image_gray = cv.read(user_image,0)
+        img_from_database = cv.imread('TrainingImages/%s/%s' % (categories[index+1], image_to_loop), 0)
+        user_image_gray = cv.imread(user_image,0)
         img_from_database_resized = cv.resize(img_from_database, (400, 400))
         user_image_resized = cv.resize(user_image_gray,(400,400))
 
@@ -52,16 +55,20 @@ try:
         for m, n in matches:
             if m.distance < 0.75 * n.distance:
                 good_keypoint.append([m])
-        print(len(good_keypoint))
         compared_images = cv.drawMatchesKnn(user_image_resized, keypoints_1, img_from_database_resized,
                                             keypoints_2, good_keypoint, None, flags=2)
 
-
-        cv.imshow('img3', compared_images)
+        arry.append([len(good_keypoint), image_to_loop])
+        #cv.imshow('img %s' %len(good_keypoint), compared_images)
+    arry.sort(key=lambda row:(row[0]), reverse=True)
+    print(arry)
+  
+                  
 
 except:
     print('The product does not exist')
-    
+
 finally:
     print(value)
+    cv.waitKey(0)
 

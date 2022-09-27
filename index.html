@@ -1,0 +1,703 @@
+{% extends 'base.html' %}
+{% load static %}
+{% load humanize %}
+{% load crispy_forms_tags %}
+{% block content %}
+
+   <style>
+        img{
+    width:100px;
+    height:70px;
+    border:1px solid;
+    margin:10px;
+}
+    </style>
+<!-- search  -->
+<!-- Search bar for pages that have filtering enabled -->
+<div class="container pb-0 mb-3">
+    <div class="text-center">
+        <div class="row">
+
+            <div class="col-12">
+                <form class=" filter-search-form-1  mt-3 form-sm">
+                    <div class="container-fluid">
+
+                        <div class="row w-100">
+                            <div class="col-4">
+                                <input class="filter-search-input w-100 px-1 form-control-sm" name="location" type='text' placeholder="Location" {% if location %} value="{{ location }}" {% endif %} aria-label="Location">
+                            </div>
+                            <div class="col-6">
+                                <input class="filter-search-input  animate  w-100 form-control-sm" type="text" required name="search" placeholder="Search" {% if search_query %} value="{{ search_query }}" {% endif %} aria-label="Search">
+                            </div>
+                            <div class="col-2 px-sm-0">
+                                <input type="file" hidden name="picture" id="picture"/>
+                                    <label for="picture"><button class="btn btn-warning  btn-sm no-style" disabled><i class="fas fa-camera" aria-hidden="true"></i></button></label>
+                                <button class="btn btn-warning  btn-sm no-style" type="submit">
+                                    <i class="fas fa-search" aria-hidden="true"></i>
+                                </button>
+                            </div>
+                        </div>
+                        
+                    </div>
+                </form>
+            <form method="post" enctype="multipart/form-data">
+                 {% csrf_token %}
+                <input class="filter-search-input w-100 px-1 form-control-sm" name="location" type='text' placeholder="Location" {% if location %} value="{{ location }}" {% endif %} aria-label="Location">
+                <input type="file" name="upload" accept="image/*">
+                <br>
+                <button class="btn btn-dark my-4" type="submit">Submit</button>
+            </form>
+          <div class="row">
+                {{info}}
+                {% for imge in images %}
+                    {% for img in imge %}
+                      <img src = {{ img.img }}>
+                    {% endfor %}
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+</div>
+{% if search_query %}
+
+<div class="container p">
+    <div class="mb-5 d-flex flex-column align-items-center justify-content-center">
+        <p class="font-xxlarge text-bold my-0 py-0">You searched for </p>
+
+        <p class="display-4 ml-3 text-bold my-0   ">{{ search_query }}</p>
+    </div>
+</div>
+{% endif %} 
+{% if not search_query %}
+<div class="container">
+    
+</div>
+<!-- Category-->
+<div class="container">
+    <div class="row">
+        <div class="col-md-4 mb-3 white-bg p-3 " id="cat-list">
+            <div class="categories">
+                <!--category main-->
+                <div class="categories-main new-categories-main categories-main-home" data-role="category-content" data-spm="16005" data-widget-cid="widget-2">
+
+                    <div>
+                        <i class="fas fa-list mr-3"></i>
+                        <span>Business Categories</span>
+                    </div>
+
+                    <div class="categories-list-box pl-3">
+                        <div class="category-item">
+                            <div class="category-name">
+                                <span>
+                                    <a href="{% url 'shop:all_business_category' %}" id="font"><i class="fas fa-align-justify"></i> All </a>
+                                </span>
+                            </div>
+                        </div>
+                        {% for category_group in category_groups|slice:"9" %}
+                        <div class="category-item">
+                            <div class="dropdown">
+                                <span class="category-name" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                    <a href="{{ category_group.get_absolute_url }}" id="font">
+                                        <i class="{{ category_group.mdbico_link }} mr-2"></i>
+                                        {{ category_group.name }} </a>
+                                </span>
+
+                                <div class="dropdown-menu dropdown-warning" aria-labelledby="dropdownMenuButton">
+                                    {% for category in category_group.categories.all %}
+                                    <a class="dropdown-item" href="{{ category.get_absolute_url }}">
+                                        {{ category.name }}</a> {% endfor %}
+                                </div>
+                            </div>
+                        </div>
+                        {% endfor %}
+
+                    </div>
+                </div>
+                <!--ams-region-end 1226-->
+            </div>
+        </div>
+
+        <!-- Carousel -->
+        <div class="col-lg-8 col-md-12 ">
+            <div id="carousel" class="carousel slide carousel-fade mb-3" data-ride="carousel" data-interval="6000">
+                <ol class="carousel-indicators">
+                    {% for heroimage in heroimages %}
+                    <li data-target="#carousel" data-slide-to="{{ forloop.counter }}" class="{% if forloop.counter == 1 %}active{% endif %}"></li>
+                    {% endfor %}
+                </ol>
+                
+
+                <!-- this is the active image thats the first image -->
+                <div class="carousel-inner" role="listbox">
+                    {% for heroimage in heroimages %}
+                    {% if forloop.counter == 1 %}
+                    <div class="carousel-item {% if forloop.counter == 1 %}active{% endif %}">
+                        <a >
+                            
+                            <img src="{{ heroimage.image.url }}" alt="responsive image" 
+                            class="d-block" style="max-height: 700px; width: 100%;" id="caroimg">
+                            
+                        </a>
+                    </div>
+                    <!-- this should be the rest of the images -->
+                    {% endif %}
+                    {% endfor %}
+
+                    
+                    {% for heroimage in heroimages %}
+                    {% if forloop.counter > 1%}
+                    <!-- /.carousel-item -->
+                    <div class="carousel-item">
+                        <a>
+                            <img src="{{ heroimage.image.url }}" alt="responsive image" 
+                            style="max-height: 700px; width: 100%;" class="d-block img-fluid">
+
+                        </a>
+                    </div>
+                    {% endif %}
+                    {% endfor %}
+                </div>
+                <!-- /.carousel-inner -->
+                <a class="carousel-control-prev" href="#carousel" role="button" data-slide="prev">
+                    <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+                    <span class="sr-only">Previous</span>
+                </a>
+                <a class="carousel-control-next" href="#carousel" role="button" data-slide="next">
+                    <span class="carousel-control-next-icon" aria-hidden="true"></span>
+                    <span class="sr-only">Next</span>
+                </a>
+            </div>
+            <!-- /.carousel -->
+        </div>
+
+    </div>
+</div>
+
+
+
+<!-- category with icons -->
+<div class="container mb-3" id="cat-list-icon">
+    <div class="mb-2" style=" height:170px">
+
+        <div class="container-category">
+            {% for product_category in product_category_groups|slice:"0:4" %}
+            <a class="float-left p-2 col-3 text-center" href="{{ product_category.get_absolute_url }}">
+                <img loading="lazy" class="container-category-icon pb-0 mb-0" src="{{ product_category.avatar.url }}" alt="img not found" srcset="">
+                <p style="font-size: 0.6rem;" id="font" class="">{{ product_category.name }}</p>
+            </a>
+            {% empty %}
+            <p>NO items</p>
+            {% endfor %}
+        </div>
+        <div class="container-category ">
+            {% for product_category in product_category_groups|slice:"4:7" %}
+            <a class="float-left p-2 col-3 text-center" href="{{ product_category.get_absolute_url }}">
+                <img loading="lazy" class="container-category-icon pb-0 mb-0" src="{{ product_category.avatar.url }}" alt="img not found" srcset="">
+                <p style="font-size: 0.6rem;" id="font" class="">{{ product_category.name }}</p>
+            </a>
+            {% endfor %}
+            <a class="float-left p-2 col-3 text-center" href="{% url 'shop:all_product_category' %}">
+                <img loading="lazy" class="container-category-icon pb-0 mb-0" src="{% static 'img/cat-icon/more.png' %}" alt="img not found" srcset="">
+                <p style="font-size: 0.6rem;" class="">All</p>
+            </a>
+        </div>
+
+    </div>
+</div>
+
+{% if hotdeals %}
+<!-- hot deal -->
+<div id="hot-deal-container" class="container mt-2 hotdeal_back shadow-sm">
+
+    <div class="row title-row">
+        <div class="container">
+            <div class="d-flex flex-row justify-content-between">
+                <div class="pt-2">
+                    <i class="fas fa-fire-alt mr-2 hot-ico"></i>
+                    <span class="  text-black">Hot Deals</span>
+                </div>
+                <div class="pr-2 pt-2">
+                    <a href="{% url 'shop:all_hotdeals' %}">
+                        <span> <i class="fas fa-arrow-alt-circle-right cla"></i></span>
+                    </a>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    <hr class="mb-0 pb-0 mt-0 pt-0">
+
+    <div class="row mb-3 content-center">
+        <div class="scrollmenu text-white">
+
+            {% for hotdeal in hotdeals %}
+            <div id="hot-deal" class="prod-items px-2" href="#home">
+                <a href="{% url 'shop:hotdeal_detail' hotdeal.slug %}">
+                    <div class="text-center">
+                        <div class="ml-2 mt-2">
+                            <div class="prod bg-white">
+                                <img loading="lazy" id="hot-deal-img" src="{{ hotdeal.product_image.url }}" alt="img not found">
+                            </div>
+                            <div>
+                                <i class="hot-dis">-{{ hotdeal.discount }}%</i>
+                            </div>
+                            <div class="text-wrap" style="font-size: 0.9rem;">
+                                <strong class=" ">₵{{ hotdeal.discounted_price }}</strong>
+                            </div>
+                        </div>
+                    </div>
+                </a>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+</div>
+{% endif %}
+<!-- /hot deal -->
+
+{% if swap_items %}
+<!-- Swap aitems -->
+<div id="classified_ads" class="container swapitem_backg shadow-sm">
+    <div class="row title-row">
+        <div class="container">
+            <div class="d-flex flex-row justify-content-between">
+                <div class="pt-2">
+                    <i style="color: rgb(0, 0, 0);;" class="fas fa-sync mr-2"></i>
+                    <span class="  text-black">Swap Items</span>
+                </div>
+                <div class="pr-2 pt-2">
+                    <a href="{% url 'classified:all-swap-items' %}">
+                        <span> <i class="fas fa-arrow-alt-circle-right cla"></i></span>
+                    </a>
+                </div>
+            </div>
+
+        </div>
+
+    </div>
+    <hr class="mb-0 pb-0 mt-0 pt-0">
+    <div class="row mb-3 content-center">
+        <div class="scrollmenu text-white">
+            {% for swap_item in swap_items %}
+            <div id="requested_product" class="prod-items text-truncate ml-1">
+                <a href="{{ swap_item.get_absolute_url }}">
+                    <div class="card-header px-1 py-1 text-center">
+                        <img class="bg-white b-radious" loading="lazy" id="hot-deal-img" src="{{ swap_item.image.url }}" alt="img not found">
+                        <h4 class="font-large m-0 text-bold pt-1" style="font-size: 0.7rem;">
+                            {{ swap_item.title }}
+                        </h4>
+                    </div>
+                </a>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+</div>
+{% endif %}
+
+{% if requested_products %}
+<!-- requested products -->
+<div id="hot-deal-container" class="container requested_prod shadow-sm">
+
+    <div class="row title-row">
+        <div class="container">
+            <div class=" pt-2 d-flex flex-row justify-content-between">
+                <div>
+                    <i style="color: rgb(0, 0, 0);" class="fas fa-exchange-alt fa-lg mr-2 req-ico"></i>
+                    <span class="   text-black">Requested Items</span>
+                </div>
+                <div class="pr-2">
+                    <a href="{% url 'shop:requested-product-list' %}">
+                        <span> <i class="fas fa-arrow-alt-circle-right"></i></span>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+    <hr class="mb-0 pb-0 mt-0 pt-0">
+    <div class="row mb-3 content-center">
+        <div class="scrollmenu text-white">
+            {% for requested_product in requested_products %}
+            <div id="requested_product" class="prod-items text-truncate ml-1">
+                <a href="{{ requested_product.get_absolute_url }}">
+                    <div class="card-header px-1 py-1 text-center">
+                        <img class="bg-white b-radious" loading="lazy" id="hot-deal-img" 
+                        src="{% if requested_product.image %}{{ requested_product.image.url }}{% endif %}" alt="img not found">             
+                        <h4 class="font-large m-0 text-dark text-bold pt-1" style="font-size: 0.7rem;">
+                            {{ requested_product.title }}
+                        </h4>
+                    </div>
+                </a>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+</div>
+{% endif %}
+<!-- /requested products -->
+
+{% if free_products %}
+<!-- free products -->
+<div id="hot-deal-container" class="container free_prod shadow-sm">
+
+    <div class="row title-row">
+        <div class="container">
+            <div class=" pt-2 d-flex flex-row justify-content-between">
+                <div>
+                    <i style="color: rgb(0, 0, 0);;"  class="fas fa-icons mr-2"></i>
+                    <span class="   text-black">Free Items</span>
+                </div>
+                <div class="pr-2">
+                    <a href="{% url 'classified:all-free-products' %}">
+                        <span> <i class="fas fa-arrow-alt-circle-right cla"></i></span>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+    <hr class="mb-0 pb-0 mt-0 pt-0">
+    <div class="row mb-3 content-center">
+        <div class="scrollmenu text-white">
+            {% for free_product in free_products %}
+            <div id="requested_product" class="prod-items text-truncate ml-1">
+                <a href="{{ free_product.get_absolute_url }}">
+                    <div class="card-header px-1 py-1 text-center">
+                        <img class="bg-white b-radious" loading="lazy" id="hot-deal-img" src="{{ free_product.image.url }}" alt="img not found">
+                        <h4 class="font-large m-0 text-bold pt-1" style="font-size: 0.7rem;">
+                            {{ free_product.title }}
+                        </h4>
+                    </div>
+                </a>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+</div>
+{% endif %}
+<!-- /free products -->
+
+
+
+
+{% if premium_shops %}
+<div class="white-bg py-4">
+
+    <div class="container mb-1">
+        <div class="d-flex flex-column align-items-center">
+            <p class="display-4 text-bold  text-upercase carousel-header">Premium Businesses</p>
+        </div>
+        <div class="owl-carousel no-loop owl-theme  position-relative">
+            {% for shop in premium_shops %} 
+            {% include "shop/_partials/_shop_card.html" %} 
+            {% endfor %}
+        </div>
+        <div class="row text-center justify-content-center">
+            <a class="btn btn-sm custom-round-btn-large text-white btn-rounded  waves-effect waves-light " href="{% url 'shop:all_prem_business' %}"> Load more </a>
+        </div>
+    </div>
+</div>
+{% endif %} {% if category_groups %}
+<!-- Category group section -->
+<div class="container py-4">
+    <div class="d-flex flex-column align-items-center">
+        <p class="display-4 text-bold  text-uppercae carousel-header">Business Categories</p>
+
+    </div>
+    <div class="owl-carousel owl-carousel-small  owl-theme  position-relative">
+
+        {% for category_group in category_groups %}
+        <div class="item py-2 px-1 h-100">
+            <div class="  h-100">
+                <div class="card-img h-100px">
+                    <a href="{% url 'shop:businesses' %}">
+                        <img loading="lazy" class="img-secondary" src="{{ category_group.avatar.url }}" alt="{{ category_group.name }} image">
+                    </a>
+                </div>
+                <div class="card-body text-center py-1 px-1 p-lg-2">
+                    <a href="{{ category_group.get_absolute_url }}">
+                        <p class="font-large text-bold mb-0">
+                             {{ category_group.name }}
+                        </p>
+                    </a>
+                    <p class="font-small">
+                        <span class="badge badge-primary mr-1">
+                            {{ category_group.count_shops }}
+                        </span> Shops
+                    </p>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+<!-- end category group section -->
+{% endif %} 
+{% endif %}
+{% if search_query %}
+{% if hotdeals%}
+<!-- hot deal -->
+<div id="hot-deal-container" class="container mt-2 hotdeal_back shadow-sm">
+    <div class="row title-row">
+        <div class="container">
+            <div class="d-flex flex-row justify-content-between">
+                <div class="pt-2">
+                    <i class="fas fa-fire-alt mr-2 hot-ico"></i>
+                    <span class="  text-black">Hot Deals</span>
+                </div>
+                <div class="pr-2 pt-2">
+                    <a href="{% url 'shop:all_hotdeals' %}">
+                        <span> <i class="fas fa-arrow-alt-circle-right cla"></i></span>
+                    </a>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    <hr class="mb-0 pb-0 mt-0 pt-0">
+
+    <div class="row mb-3 content-center">
+        <div class="scrollmenu text-white">
+
+            {% for hotdeal in hotdeals %}
+            <div id="hot-deal" class="prod-items px-2" href="#home">
+                <a href="{% url 'shop:hotdeal_detail' hotdeal.slug %}">
+                    <div class="text-center">
+                        <div class="ml-2 mt-2">
+                            <div class="prod bg-white">
+                                <img loading="lazy" id="hot-deal-img" src="{{ hotdeal.product_image.url }}" alt="img not found">
+                            </div>
+                            <div>
+                                <i class="hot-dis">-{{ hotdeal.discount }}%</i>
+                            </div>
+                            <div class="text-wrap" style="font-size: 0.9rem;">
+                                <strong class=" ">₵{{ hotdeal.discounted_price }}</strong>
+                            </div>
+                        </div>
+                    </div>
+                </a>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+</div>
+<!-- /hot deal -->
+{% endif %}
+
+{% if swap_items %}
+<!-- Swap aitems -->
+<div id="classified_ads" class="container swapitem_backg shadow-sm">
+    <div class="row title-row">
+        <div class="container">
+            <div class="d-flex flex-row justify-content-between">
+                <div class="pt-2">
+                    <i style="color: rgb(0, 0, 0);;" class="fas fa-sync mr-2"></i>
+                    <span class="  text-black">Swap Items</span>
+                </div>
+                <div class="pr-2 pt-2">
+                    <a href="{% url 'classified:all-swap-items' %}">
+                        <span> <i class="fas fa-arrow-alt-circle-right cla"></i></span>
+                    </a>
+                </div>
+            </div>
+
+        </div>
+
+    </div>
+    <hr class="mb-0 pb-0 mt-0 pt-0">
+    <div class="row mb-3 content-center">
+        <div class="scrollmenu text-white">
+            {% for swap_item in swap_items %}
+            <div id="requested_product" class="prod-items text-truncate ml-1">
+                <a href="{{ swap_item.get_absolute_url }}">
+                    <div class="card-header px-1 py-1 text-center">
+                        <img class="bg-white b-radious" loading="lazy" id="hot-deal-img" src="{{ swap_item.image.url }}" alt="img not found">
+                        <h4 class="font-large m-0 text-bold pt-1" style="font-size: 0.7rem;">
+                            {{ swap_item.title }}
+                        </h4>
+                    </div>
+                </a>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+</div>
+{% endif %}
+
+{% if free_products %}
+<!-- free products -->
+<div id="hot-deal-container" class="container free_prod shadow-sm">
+
+    <div class="row title-row">
+        <div class="container">
+            <div class=" pt-2 d-flex flex-row justify-content-between">
+                <div>
+                    <i style="color: rgb(0, 0, 0);;"  class="fas fa-icons mr-2"></i>
+                    <span class="   text-black">Free Items</span>
+                </div>
+                <div class="pr-2">
+                    <a href="{% url 'classified:all-free-products' %}">
+                        <span> <i class="fas fa-arrow-alt-circle-right cla"></i></span>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+    <hr class="mb-0 pb-0 mt-0 pt-0">
+    <div class="row mb-3 content-center">
+        <div class="scrollmenu text-white">
+            {% for free_product in free_products %}
+            <div id="requested_product" class="prod-items text-truncate ml-1">
+                <a href="{{ free_product.get_absolute_url }}">
+                    <div class="card-header px-1 py-1 text-center">
+                        <img class="bg-white b-radious" loading="lazy" id="hot-deal-img" src="{{ free_product.image.url }}" alt="img not found">
+                        <h4 class="font-large m-0 text-bold pt-1" style="font-size: 0.7rem;">
+                            {{ free_product.title }}
+                        </h4>
+                    </div>
+                </a>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+</div>
+{% endif %}
+
+
+<!-- /free products -->
+{% endif %}
+<!-- Regular shops -->
+<div class="white-bg py-4">
+    <div class="container">
+        <div class=" d-flex flex-column align-items-center pt-1">
+            <p class="display-4 text-bold  text-upercase carousel-header"> Businesses </p>
+
+        </div>
+        {% if shops %}
+        <div class="owl-carousel  owl-theme  position-relative">
+            {% for shop in shops %} 
+            {% include "shop/_partials/_shop_card.html" %} 
+            {% endfor %}
+        </div>
+
+        <div class="row text-center justify-content-center">
+            <a class="btn custom-round-btn-large btn-sm text-white btn-rounded  waves-effect waves-light " href="{% url 'shop:all_shops' %}"> Load more</a>
+        </div>
+        {% else %}
+        <div class="col-12">
+            <p class="text-danger text-center font-large">Oops, there are no shops at the moment</p>
+        </div>
+        {% endif %}
+    </div>
+</div>
+
+{% if product_category_groups %}
+<!-- Category group section -->
+<div class="container py-4">
+    <div class="d-flex flex-column align-items-center">
+        <p class="display-4 text-bold  text-uppercae carousel-header">Product Categories</p>
+    </div>
+    <div class="owl-carousel owl-carousel-small owl-theme position-relative">
+        {% for category_group in product_category_groups %}
+        <div class="item mb-0 py-2 h-100">
+            <div class=" h-100">
+                <div class="card-img h-100px">
+                    <a href="{{ category_group.get_absolute_url }}">
+                        <img loading="lazy" class="img-secondary" src="{{ category_group.avatar.url }}" alt="{{ category_group.name }} image">
+                    </a>
+                </div>
+                <div class="card-body text-center py-1 px-1 p-lg-2">
+                    <a href="{{ category_group.get_absolute_url }}">
+                        <p class="font-large text-bold mb-0"> {{ category_group.name }}</p>
+                    </a>
+                    <p class="font-small">
+                        <span class="badge badge-primary mr-1">
+                            {{ category_group.count_products }}
+                        </span>Products
+                    </p>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+<!-- end category group section -->
+{% endif %}
+
+<!-- Products -->
+<div class="white-bg py-4">
+
+    <div class="container">
+        <div class="d-flex flex-column align-items-center">
+            <p class="display-4 text-bold  text-upercase carousel-header">Products</p>
+        </div>
+        <div class="row">
+            {% for product in products %}
+            <div class="col-6 col-sm-6 col-md-4 col-lg-3  pb-3">
+                {% include "shop/_partials/_product_card.html" %}
+            </div>
+
+            {% empty %}
+            <div class="col-12">
+                <p class="text-danger text-center font-large">Oops, there are no products at the moment</p>
+            </div>
+            {% endfor %}
+        </div>
+        <div class="row text-center justify-content-center py-3">
+            <a class="btn custom-round-btn-large btn-sm text-white btn-rounded  waves-effect waves-light " href="{% url 'shop:all_products' %}"> Load more</a>
+        </div>
+
+    </div>
+</div>
+
+{% if search_query %}
+
+<!-- request button -->
+<div  class="container" style="background-color: white; border-radius: 9px;">
+
+    <div class="row mb-3 content-center">
+        <div class="col-12 p-2 text-center">
+            <h5 class="text-bolder">Didn't find what you were looking for? We got you covered.</h5>
+            <a {% if request.user.is_anonymous%} id="make_request" {% endif %} href="{% url 'shop:add-requested-product' %}" class="btn btn-md peach-gradient">
+                <i class="fas fa-exchange-alt fa-lg mr-2"></i> Make a Request
+                <script>
+                    document.getElementById("make_request").addEventListener('click', (e) => {
+                        if (!confirm("Sorry, you are not loged in. Please log in to make a request.")) {
+                            e.preventDefault();
+                        }
+                    });
+                </script>
+            </a>
+
+        </div>
+    </div>
+</div>
+
+{% endif %}
+
+
+<!-- <div class="white-bg py-4">
+
+    <div class="container">
+        <div class="d-flex flex-column align-items-center">
+            <p class="display-4 text-bold  text-upercase carousel-header">Chat with us</p>
+        </div>
+        <div class="py-4 d-flex flex-wrap align-items-center gap-4 justify-content-center">
+            
+            <a href="{{  admin_chatroom_url }}" class="waves-effect waves-light rounded-5 btn my-3 btn-lg p-sm-4 px-sm-5 btn-warning">
+                <i class="far fa-comments"></i>
+                <span class="pl-2">Internal Chat</span>
+            </a>
+            {% if config.whatsapp_url %}
+            <a href="{{  config.whatsapp_url }}" class="waves-effect waves-light rounded-5 btn my-3 btn-lg p-sm-4 px--sm-5 btn-primary">
+                <i class="fab fa-whatsapp"></i>
+                <span class="pl-2">Whatsapp</span>
+            </a>        
+            {% endif %}    
+        </div>
+    </div>
+</div>
+ -->
+{% include 'footer.html' %} {% endblock %}
+

@@ -40,6 +40,8 @@
                         
                     </div>
                 </form>
+               
+               <!--Here's is just a way to integrate it.  -->
             <form method="post" enctype="multipart/form-data">
                  {% csrf_token %}
                 <input class="filter-search-input w-100 px-1 form-control-sm" name="location" type='text' placeholder="Location" {% if location %} value="{{ location }}" {% endif %} aria-label="Location">
@@ -49,12 +51,15 @@
             </form>
           <div class="row">
                 {{info}}
-                {% for imge in images %}
-                    {% for img in imge %}
-                      <img src = {{ img.img }}>
+                {% for image in images %}
+                    {% for imag in image %} <!-- You can use imag.shop to get the details of the shop the image belongs to so you can access the url to the stores page-->
+                      <img src = {{ imag.img }}>
                     {% endfor %}
                 {% endfor %}
             </div>
+               <!-- End --> 
+               
+               
         </div>
     </div>
 </div>

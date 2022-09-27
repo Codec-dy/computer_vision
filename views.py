@@ -29,10 +29,13 @@ def upload(request):
         if len(model) != 0:
             IMG_LIST = []
             if model[0].find('Product found') == 0:
-                if model[2].find('_') == 0:
-                    model[2] = model[2].replace('_',' ')
+                category_name = ''
+                if model[2].find('_') != -1:
+                    category_name = model[2].replace('_',' ')
 
-                search_from = list(filter(lambda shop: shop['category_name'] == model[2],results))
+                search_from = list(filter(lambda shop: shop['category_name'] == category_name,results))
+            else:
+                search_from = results
             for img in model[1]:
                 for result in search_from:
                     imags = result['images']
@@ -41,7 +44,7 @@ def upload(request):
                         name = imag['image'].split('/')[-1]
                         cities = result['shop']['owner']['region']['cities']
                         location_search = list(filter(lambda city: city['name'] == location,cities))
-                        print(location_search)
+  
                         if img[1] == name and len(location_search) != 0:
                             shop = result['shop']
                             IMG_LIST.append([{'img': 'media/TrainingImages/' + img[2] + '/' + img[1], 'shop':shop}])

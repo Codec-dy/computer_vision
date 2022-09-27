@@ -29,7 +29,7 @@ def upload(request):
         if len(model) != 0:
             IMG_LIST = []
             if model[0].find('Product found') == 0:
-                category_name = ''
+                category_name = model[2]
                 if model[2].find('_') != -1:
                     category_name = model[2].replace('_',' ')
 

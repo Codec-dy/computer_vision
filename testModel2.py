@@ -7,7 +7,7 @@ import os
 # Load the model
 model = load_model('keras_model.h5')
 
-categories = os.listdir('static/TrainingImages')
+categories = os.listdir('media/TrainingImages')
 def figureOut(filepath):
     arry = []
     try:
@@ -39,9 +39,9 @@ def figureOut(filepath):
         print(index)
         print('This is a ' + categories[index])
         orb = cv.ORB_create(nfeatures=4000)
-        databaseImages = os.listdir('static/TrainingImages/%s' %categories[index])
+        databaseImages = os.listdir('media/TrainingImages/%s' %categories[index])
         for image_to_loop in databaseImages:
-            img_from_database = cv.imread('static/TrainingImages/%s/%s' % (categories[index], image_to_loop), 0)
+            img_from_database = cv.imread('media/TrainingImages/%s/%s' % (categories[index], image_to_loop), 0)
             user_image_gray = cv.imread(filepath,0)
             user_image_resized = cv.resize(user_image_gray,(400,400))
 
@@ -60,15 +60,15 @@ def figureOut(filepath):
                     good_keypoint.append([m])
             arry.append([len(good_keypoint), image_to_loop, categories[index]])
         arry.sort(key=lambda row:(row[0]), reverse=True)
-        return ['Product found ( '+categories[index]+')',arry]
+        return ['Product found ('+categories[index]+')',arry, categories[index]]
     except:
         print('The product does not exist')
         orb = cv.ORB_create(nfeatures=4000)
         for category in categories:
             index = categories.index(category)
-            databaseImages = os.listdir('static/TrainingImages/%s' %categories[index])
+            databaseImages = os.listdir('media/TrainingImages/%s' %categories[index])
             for image_to_loop in databaseImages[0:5]:
-                img_from_database = cv.imread('static/TrainingImages/%s/%s' % (categories[index], image_to_loop), 0)
+                img_from_database = cv.imread('media/TrainingImages/%s/%s' % (categories[index], image_to_loop), 0)
                 user_image_gray = cv.imread(filepath,0)
                 user_image_resized = cv.resize(user_image_gray,(400,400))
 

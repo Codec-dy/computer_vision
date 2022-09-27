@@ -6,7 +6,7 @@ import requests
 
 def upload(request):
     IMG_LIST = []
-    info = {}
+    info = ''
     shop=''
     if request.method == 'POST' and request.FILES['upload']:
         location = request.POST.get('location')
@@ -25,7 +25,7 @@ def upload(request):
         results = data['results']
 
         model = testModel.figureOut('media/static/' + upload.name)
-        print(model)
+        
         if len(model) != 0:
             IMG_LIST = []
             if model[0].find('Product found') == 0:

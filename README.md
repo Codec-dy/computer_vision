@@ -19,7 +19,20 @@ Install open-cv with pip(terminal)
 ```bash
   pip install opencv-python
 ```
-    
+ Install keras with pip(terminal)
+
+```bash
+  pip install keras
+``` 
+Install tensorflow with pip(terminal)
+
+```bash
+  pip install tensorflow
+``` 
+Install scipy with pip(terminal)
+```bash
+  pip install scipy
+``` 
 ## Running Tests
 
 To run tests, run the following command

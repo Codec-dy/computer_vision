@@ -30,10 +30,12 @@ def upload(request):
             IMG_LIST = []
             if model[0].find('Product found') == 0:
                 category_name = model[2]
+                search_from = results
                 if model[2].find('_') != -1:
                     category_name = model[2].replace('_',' ')
-
-                search_from = list(filter(lambda shop: shop['category_name'] == category_name,results))
+                if location != '':
+                    search_from = list(filter(lambda shop: shop['category_name'] == category_name,results))
+                    print('hereeeeee')
                 for img in model[1]:
                     for result in search_from:
                         imags = result['images']
@@ -41,12 +43,15 @@ def upload(request):
                         for imag in imags:
                             name = imag['image'].split('/')[-1]
                             cities = result['shop']['owner']['region']['cities']
-                            location_search = list(filter(lambda city: city['name'] == location, cities))
-                            print(location_search)
-                            if img[1] == name and len(location_search) != 0:
+                            location_search = []
+                            if location != '':
+                                location_search = list(filter(lambda city: city['name'] == location, cities))
+
+                            if (img[1] == name and len(location_search) != 0) or (img[1] == name and location ==''):
                                 shop = result['shop']
                                 IMG_LIST.append(
                                     [{'img': 'media/TrainingImages/' + img[2] + '/' + img[1], 'shop': shop}])
+
             else:
                 search_from = results
                 for img in model[1]:
@@ -58,8 +63,11 @@ def upload(request):
                             if img[1] == name:
                                 shop = result['shop']
                                 IMG_LIST.append([{'img': 'media/TrainingImages/' + img[2] + '/' + img[1], 'shop':shop}])
-
-            info = model[0]
+            print(len(IMG_LIST))
+            if len(IMG_LIST) == 0 and model[0].find('Product found') == 0:
+                info = 'Product Not Available In This Location'
+            else:
+                info = model[0]
 
         return render(request, 'index.html', {'file_url': file_url,'info':info, 'images':IMG_LIST})
     return render(request, 'index.html', {'info':info, 'images':IMG_LIST})

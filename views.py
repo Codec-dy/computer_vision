@@ -25,7 +25,7 @@ def upload(request):
         results = data['results']
 
         model = testModel.figureOut('media/static/' + upload.name)
-        
+        print(model)
         if len(model) != 0:
             IMG_LIST = []
             if model[0].find('Product found') == 0:
@@ -34,21 +34,32 @@ def upload(request):
                     category_name = model[2].replace('_',' ')
 
                 search_from = list(filter(lambda shop: shop['category_name'] == category_name,results))
+                for img in model[1]:
+                    for result in search_from:
+                        imags = result['images']
+
+                        for imag in imags:
+                            name = imag['image'].split('/')[-1]
+                            cities = result['shop']['owner']['region']['cities']
+                            location_search = list(filter(lambda city: city['name'] == location, cities))
+                            print(location_search)
+                            if img[1] == name and len(location_search) != 0:
+                                shop = result['shop']
+                                IMG_LIST.append(
+                                    [{'img': 'media/TrainingImages/' + img[2] + '/' + img[1], 'shop': shop}])
             else:
                 search_from = results
-            for img in model[1]:
-                for result in search_from:
-                    imags = result['images']
+                for img in model[1]:
+                    for result in search_from:
+                        imags = result['images']
 
-                    for imag in imags:
-                        name = imag['image'].split('/')[-1]
-                        cities = result['shop']['owner']['region']['cities']
-                        location_search = list(filter(lambda city: city['name'] == location,cities))
-  
-                        if img[1] == name and len(location_search) != 0:
-                            shop = result['shop']
-                            IMG_LIST.append([{'img': 'media/TrainingImages/' + img[2] + '/' + img[1], 'shop':shop}])
+                        for imag in imags:
+                            name = imag['image'].split('/')[-1]
+                            if img[1] == name:
+                                shop = result['shop']
+                                IMG_LIST.append([{'img': 'media/TrainingImages/' + img[2] + '/' + img[1], 'shop':shop}])
 
             info = model[0]
+
         return render(request, 'index.html', {'file_url': file_url,'info':info, 'images':IMG_LIST})
     return render(request, 'index.html', {'info':info, 'images':IMG_LIST})
